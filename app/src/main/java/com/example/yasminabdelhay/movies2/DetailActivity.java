@@ -47,10 +47,10 @@ public class DetailActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Bundle extras =getIntent().getExtras();
-        DetailFragment mdetailFragment=new DetailFragment();
-        mdetailFragment.setArguments(extras);
-        if (savedInstanceState == null) {
 
+        if (savedInstanceState == null) {
+            DetailFragment mdetailFragment=new DetailFragment();
+            //mdetailFragment.setArguments(extras);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mdetailFragment)
                     .commit();

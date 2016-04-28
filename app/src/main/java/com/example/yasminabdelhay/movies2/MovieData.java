@@ -49,92 +49,28 @@ public class
     String pathInCertainPositio=null;
     String movie_path = null;
     ArrayList<String> poster_pathes1 =new ArrayList<>();
+    ArrayList<String> poster_id =new ArrayList<>();
     ArrayList<String> mposter_pathesList =new ArrayList<>();
-    NameListnere nameListnere ;
-
+   // NameListnere nameListnere =null;
+    NameListnere nameListneres=null;
+    SharedPreferences  SharedPref;
+    String sortType ;
 
 
 
     Movie movie=new Movie(MovieJsonStr);
 
+
     public MovieData() {
         setHasOptionsMenu(true);
     }
-
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-
-
-
-        rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        //rootView2 = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        gridView = (GridView) rootView.findViewById(R.id.gv_posters);
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int movie_id = 0;
-
-                try {
-                    movie_id = new Movie(MovieJsonStr).getIDMovieFromJson().get(position);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                String movie_name = null;
-
-                try {
-                    movie_name = new Movie(MovieJsonStr).getoriginaltitleataFromJson().get(position);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                try {
-                    movie_path = new Movie(MovieJsonStr).getPosterPathDataFromJson().get(position);
-                    pathInCertainPositio = movie_path;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-//                ImageButton imageButton = (ImageButton) rootView.findViewById(R.id.favorite);
-
-                if(nameListnere==null){
-                    Log.v("nameListnere","nulllllllllll");
-                }
-                nameListnere.selsctedName(movie_name, MovieJsonStr, position, movie_path, movie_id);
-
-
-            }
-
-
-        });
-
-
-        return rootView;
-
-    }
-
 
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
-      /*  if (id == R.id.menu_most_likely) {
-            new MovieTask().execute("Most Likely");
-            return true;
-        } else if (id == R.id.menu_popular) {
-            new MovieTask().execute("popular");
-            return true;
-        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -142,26 +78,32 @@ public class
     public void onStart() {
         super.onStart();
         // read ListPreference option
-        SharedPreferences  SharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortType= SharedPref.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_popular));
+          SharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+         sortType= SharedPref.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_popular));
 
         //read favorite poster path from shared prefrence
 
         String sharedPreferencesString;
         sharedPreferencesString=SharedPref.getString("poster_path", "");
+
+        String IDString;
+        IDString=SharedPref.getString("movie_id", "");
+         Log.v("bigstring",IDString);
         int sharedPreferencesStringNumberofFavorit;
         sharedPreferencesStringNumberofFavorit=SharedPref.getInt("favorit_movie_number", 0);
 
         Log.v("SharedP","Hey+" + sharedPreferencesString);
         String[] parts = sharedPreferencesString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts2 = IDString.split("-", sharedPreferencesStringNumberofFavorit);
         Log.v("number", String.valueOf(sharedPreferencesStringNumberofFavorit));
         poster_pathes1.clear();
       //  Log.v("movie_path", movie_path);
-        for (int i=0;i<sharedPreferencesStringNumberofFavorit;i++){
+     /*   for (int i=0;i<sharedPreferencesStringNumberofFavorit;i++){
             poster_pathes1.add(i, parts[i]);
-           Log.v("number daa", String.valueOf(parts.clone()));
+           poster_id.add(i, parts2[i]);
 
         }
+        Log.v("number id", (poster_id.get(1)));*/
 
 
 
@@ -194,6 +136,74 @@ public class
 
     }
 
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+
+
+
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        //rootView2 = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        gridView = (GridView) rootView.findViewById(R.id.gv_posters);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+
+                if (sortType.equals(getString(R.string.pref_units_most_likely)) || sortType.equals(getString(R.string.pref_units_popular))) {
+                    int movie_id = 0;
+
+                      try {
+                        movie_id = new Movie(MovieJsonStr).getIDMovieFromJson().get(position);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    String movie_name = null;
+
+                    try {
+                        movie_name = new Movie(MovieJsonStr).getoriginaltitleataFromJson().get(position);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    try {
+                        movie_path = new Movie(MovieJsonStr).getPosterPathDataFromJson().get(position);
+                        pathInCertainPositio = movie_path;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+//                ImageButton imageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+
+
+                    nameListneres.selsctedName(movie_name, MovieJsonStr, position, movie_path, 0);
+
+
+
+                } else {
+
+                    String movie_name=null;
+                    String movie_id = poster_id.get(position);
+
+                    Log.v("id movie", movie_id);
+
+                    nameListneres.selsctedName(movie_name, MovieJsonStr, position, movie_path, Integer.parseInt(movie_id));
+                }
+
+            }
+        });
+
+
+        return rootView;
+
+    }
 
     public class MovieTask extends AsyncTask<String, Void, Movie> {
         @Override
@@ -299,7 +309,7 @@ public class
     }
 
 public void setNameListneres(NameListnere nameListneres){
-    nameListneres=nameListneres;
+   this.nameListneres=nameListneres;
 
 
 }

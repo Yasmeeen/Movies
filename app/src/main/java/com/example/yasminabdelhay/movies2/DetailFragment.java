@@ -36,8 +36,206 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public  class DetailFragment extends Fragment {
-
+    String MovieJsonStr;
+    int position;
+    String movie_path ;
+    int movie_id;
     public DetailFragment() {
+    }
+
+    @Override
+    public void setArguments(Bundle args) {
+        super.setArguments(args);
+        MovieJsonStr =getArguments().getString("MovieJsonStr");
+        position = (int) getArguments().get("position");
+        movie_path = (String) getArguments().get("movie_path");
+       movie_id = (int) getArguments().get("movie_id");
+    }
+
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+       // String MovieJsonStr= null;
+       // int position = 0;
+        //  final int movie_id;
+        //  final String movie_name;
+       // final String movie_path = null;
+        String movie_path2=null ;
+
+        int id = 0;
+        String movie_title = null;
+        String poster_pathes = null;
+
+
+
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra("str")) {
+            MovieJsonStr = intent.getStringExtra("str");
+        }
+        if (intent != null && intent.hasExtra("pos")) {
+            position = intent.getIntExtra("pos", -1);
+        }
+
+        if (intent != null && intent.hasExtra("movie_id")) {
+            movie_id = intent.getIntExtra("movie_id", -1);
+        }
+
+
+        if (intent != null && intent.hasExtra("movie_path")) {
+            movie_path=intent.getStringExtra("movie_path");
+        }
+
+        movie_path2=movie_path2+movie_path;
+
+
+        try {
+            new MovieURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        try {
+            Log.i("nada", String.valueOf((new Movie(MovieJsonStr).getIDMovieFromJson().get(position))));
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } try {
+            new ReviewsURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+        try {
+            movie_title = new Movie(MovieJsonStr).getoriginaltitleataFromJson().get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ((TextView) rootView.findViewById(R.id.movie_title))
+                .setText(movie_title);
+
+
+        final ImageView imageView = ((ImageView) rootView.findViewById(R.id.movie_image));
+
+        try {
+            poster_pathes = new Movie(MovieJsonStr).getPosterPathDataFromJson().get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Picasso.with(getActivity()).load(poster_pathes).into(imageView);
+
+
+        String movie_date = null;
+        //  String date=null;
+        try {
+            movie_date = new Movie(MovieJsonStr).getReleaseDateFromJson().get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        // date= movie_date.charAt(0)+movie_date.charAt(1)+movie_date.charAt(2)+movie_date.charAt(3)+"";
+
+        String[] parts = movie_date.split("-", 2);
+        String part1 = parts[0];
+        String part2 = parts[1];
+
+        ((TextView) rootView.findViewById(R.id.movie_date))
+                .setText(part1);
+
+
+
+        double movie_vote = 0;
+        try {
+            movie_vote = new Movie(MovieJsonStr).getVoteAverageFromJson().get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ((TextView) rootView.findViewById(R.id.movie_vote))
+                .setText((movie_vote) + "/10");
+
+        String movie_overview = null;
+        try {
+            movie_overview = new Movie(MovieJsonStr).getoverviewDataFromJson().get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ((TextView) rootView.findViewById(R.id.movie_overview))
+                .setText(movie_overview);
+        // ImageView imageView1= (ImageView) rootView.findViewById(R.id.w_star_image);
+        final ImageButton imageButton =(ImageButton) rootView.findViewById(R.id.favorite);
+
+
+        try {
+            id = new Movie(MovieJsonStr).getIDMovieFromJson().get(position);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        final String finalMovie_path = movie_path;
+        final String finalid = id+"";
+        Log.v("idString",finalid);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                imageButton.setImageResource(R.drawable.star2);
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                SharedPreferences.Editor editor = sharedPref.edit();
+
+                String movie_paths = sharedPref.getString("poster_path", "");
+
+
+                String movie_id = sharedPref.getString("movie_id", "");
+
+                int favorit_movie_number;
+                favorit_movie_number = sharedPref.getInt("favorit_movie_number", 0);
+
+                movie_paths += finalMovie_path;
+                movie_id += finalid;
+                editor.putString("poster_path", movie_paths + "-");
+                ++favorit_movie_number;
+                editor.putInt("favorit_movie_number", favorit_movie_number);
+                editor.putString("movie_id", movie_id + "-");
+               sharedPref.edit().remove("favorit_movie_number").commit();
+               sharedPref.edit().remove("poster_path").commit();
+               sharedPref.edit().remove("movie_id").commit();
+                //editor.commit();
+               // editor.apply();
+
+            }
+
+        });
+
+
+
+
+
+        return rootView;
+    }
+
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null)
+            return;
+
+        int desiredWidth = ListView.MeasureSpec.makeMeasureSpec(listView.getWidth(), ListView.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0)
+                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ListView.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, ListView.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
     }
 
     public class MovieURL extends AsyncTask<Integer, Void, ArrayList<String>> {
@@ -204,176 +402,5 @@ public  class DetailFragment extends Fragment {
 
 
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-       // String MovieJsonStr= null;
-       // int position = 0;
-        //  final int movie_id;
-        //  final String movie_name;
-       // final String movie_path = null;
-        String movie_path2=null ;
-
-        int id = 0;
-        String movie_title = null;
-        String poster_pathes = null;
-
-        String MovieJsonStr =getArguments().getString("MovieJsonStr");
-        int position = (int) getArguments().get("position");
-        String  movie_path = (String) getArguments().get("movie_path");
-
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra("str")) {
-            MovieJsonStr = intent.getStringExtra("str");
-        }
-        if (intent != null && intent.hasExtra("pos")) {
-            position = intent.getIntExtra("pos", -1);
-        }
-
-        if (intent != null && intent.hasExtra("movie_path")) {
-            movie_path=intent.getStringExtra("movie_path");
-        }
-
-        movie_path2=movie_path2+movie_path;
-
-
-        try {
-            new MovieURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            Log.i("nada", String.valueOf((new Movie(MovieJsonStr).getIDMovieFromJson().get(position))));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } try {
-            new ReviewsURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-
-        try {
-            movie_title = new Movie(MovieJsonStr).getoriginaltitleataFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ((TextView) rootView.findViewById(R.id.movie_title))
-                .setText(movie_title);
-
-
-        final ImageView imageView = ((ImageView) rootView.findViewById(R.id.movie_image));
-
-        try {
-            poster_pathes = new Movie(MovieJsonStr).getPosterPathDataFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Picasso.with(getActivity()).load(poster_pathes).into(imageView);
-
-
-        String movie_date = null;
-        //  String date=null;
-        try {
-            movie_date = new Movie(MovieJsonStr).getReleaseDateFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        // date= movie_date.charAt(0)+movie_date.charAt(1)+movie_date.charAt(2)+movie_date.charAt(3)+"";
-
-        String[] parts = movie_date.split("-", 2);
-        String part1 = parts[0];
-        String part2 = parts[1];
-
-        ((TextView) rootView.findViewById(R.id.movie_date))
-                .setText(part1);
-
-
-
-        double movie_vote = 0;
-        try {
-            movie_vote = new Movie(MovieJsonStr).getVoteAverageFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ((TextView) rootView.findViewById(R.id.movie_vote))
-                .setText((movie_vote) + "/10");
-
-        String movie_overview = null;
-        try {
-            movie_overview = new Movie(MovieJsonStr).getoverviewDataFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ((TextView) rootView.findViewById(R.id.movie_overview))
-                .setText(movie_overview);
-        // ImageView imageView1= (ImageView) rootView.findViewById(R.id.w_star_image);
-        final ImageButton imageButton =(ImageButton) rootView.findViewById(R.id.favorite);
-
-
-        try {
-            id = new Movie(MovieJsonStr).getIDMovieFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        final String finalMovie_path = movie_path;
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                imageButton.setImageResource(R.drawable.star2);
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                SharedPreferences.Editor editor = sharedPref.edit();
-                String movie_paths = sharedPref.getString("poster_path", "");
-                int favorit_movie_number;
-                favorit_movie_number = sharedPref.getInt("favorit_movie_number", 0);
-
-                movie_paths += finalMovie_path;
-                editor.putString("poster_path", movie_paths + "-");
-                ++favorit_movie_number;
-                editor.putInt("favorit_movie_number", favorit_movie_number);
-
-
-                editor.commit();
-                editor.apply();
-
-            }
-
-        });
-
-
-
-
-
-        return rootView;
-    }
-
-
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null)
-            return;
-
-        int desiredWidth = ListView.MeasureSpec.makeMeasureSpec(listView.getWidth(), ListView.MeasureSpec.UNSPECIFIED);
-        int totalHeight = 0;
-        View view = null;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            view = listAdapter.getView(i, view, listView);
-            if (i == 0)
-                view.setLayoutParams(new ViewGroup.LayoutParams(desiredWidth, ListView.LayoutParams.WRAP_CONTENT));
-
-            view.measure(desiredWidth, ListView.MeasureSpec.UNSPECIFIED);
-            totalHeight += view.getMeasuredHeight();
-        }
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
     }
 }

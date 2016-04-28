@@ -28,27 +28,28 @@ boolean mtwopanel;
         if(null==flpanel2){
             mtwopanel=false;
         }
-        else {
-            mtwopanel=true;
+        else
+            mtwopanel = true;
+
             if(savedInstanceState ==null){
-
+                MovieData movieData;
+                movieData=new MovieData();
+                movieData.setNameListneres(this);
+                getSupportFragmentManager().beginTransaction().replace(R.id.flpanel_one,movieData).commit();
             }
-        }
 
-             MovieData movieData=new MovieData();
-             movieData.setNameListneres(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+     /*   fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -81,13 +82,13 @@ boolean mtwopanel;
                 DetailFragment detailFragment=new DetailFragment();
                 Bundle extras =new Bundle();
                 extras.putString("movie_name",movie_name);
-                extras.putString("MovieJsonStr",MovieJsonStr);
+                extras.putString("MovieJsonStr", MovieJsonStr);
                 extras.putInt("position", position);
                 extras.putString("movie_path", movie_path);
                 extras.putInt("movie_id", movie_id);
                 detailFragment.setArguments(extras);
-
                 getSupportFragmentManager().beginTransaction().replace(R.id.flpanel_two,detailFragment).commit();
+
 
             }
         else {
@@ -97,4 +98,5 @@ boolean mtwopanel;
                 startActivity(intent);
             }
     }
+
 }
