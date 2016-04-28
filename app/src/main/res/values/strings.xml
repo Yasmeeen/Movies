@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Movies</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_activity_detail">Details</string>
+
+    <string name="pref_user_profile">User Profile</string>
+    <string name="pref_update_setting">Update Settings</string>
+
+    <!-- Label for the temperature units preference [CHAR LIMIT=30] -->
+        <string name="pref_units_label">Movies Sorted As</string>
+
+        <!-- Label for metric option in temperature unit preference [CHAR LIMIT=25] -->
+        <string name="pref_units_label_popular">popular</string>
+
+       <!-- Label for imperial option in temperature unit preference [CHAR LIMIT=25] -->
+       <string name="pref_units_label_most_likely">most likely</string>
+
+    <string name="pref_units_label_favorit">favourite</string>
+
+       <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
+       <string name="pref_units_key" translatable="false">units</string>
+       <string name="preference_file_key" >favorit</string>
+
+        <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
+        <string name="pref_units_popular" translatable="false">popular</string>
+
+         <string name="pref_sorted_favorit" translatable="false">favorite</string>
+
+        <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
+       <string name="pref_units_most_likely" translatable="false">most_likely</string>
+
+
+
+</resources>
