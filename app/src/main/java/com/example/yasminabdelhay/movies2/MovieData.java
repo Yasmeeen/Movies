@@ -83,8 +83,8 @@ public class
 
         //read favorite poster path from shared prefrence
 
-        String sharedPreferencesString;
-        sharedPreferencesString=SharedPref.getString("poster_path", "");
+        String moviePathString;
+        moviePathString=SharedPref.getString("poster_path", "");
 
         String IDString;
         IDString=SharedPref.getString("movie_id", "");
@@ -92,18 +92,17 @@ public class
         int sharedPreferencesStringNumberofFavorit;
         sharedPreferencesStringNumberofFavorit=SharedPref.getInt("favorit_movie_number", 0);
 
-        Log.v("SharedP","Hey+" + sharedPreferencesString);
-        String[] parts = sharedPreferencesString.split("-", sharedPreferencesStringNumberofFavorit);
-        String[] parts2 = IDString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts = moviePathString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts2 = IDString.split(",", sharedPreferencesStringNumberofFavorit);
         Log.v("number", String.valueOf(sharedPreferencesStringNumberofFavorit));
         poster_pathes1.clear();
       //  Log.v("movie_path", movie_path);
-     /*   for (int i=0;i<sharedPreferencesStringNumberofFavorit;i++){
+      for (int i=0;i<sharedPreferencesStringNumberofFavorit;i++){
             poster_pathes1.add(i, parts[i]);
            poster_id.add(i, parts2[i]);
 
         }
-        Log.v("number id", (poster_id.get(1)));*/
+//        Log.v("number id", (poster_id.get(1)));
 
 
 
@@ -193,6 +192,7 @@ public class
                     String movie_id = poster_id.get(position);
 
                     Log.v("id movie", movie_id);
+
 
                     nameListneres.selsctedName(movie_name, MovieJsonStr, position, movie_path, Integer.parseInt(movie_id));
                 }

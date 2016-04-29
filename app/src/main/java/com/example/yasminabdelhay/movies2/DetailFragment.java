@@ -97,12 +97,8 @@ public  class DetailFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        try {
-            Log.i("nada", String.valueOf((new Movie(MovieJsonStr).getIDMovieFromJson().get(position))));
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } try {
+         try {
             new ReviewsURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -177,7 +173,7 @@ public  class DetailFragment extends Fragment {
 
 
         final String finalMovie_path = movie_path;
-        final String finalid = id+"";
+        final String finalid = id +",";
         Log.v("idString",finalid);
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -196,15 +192,15 @@ public  class DetailFragment extends Fragment {
 
                 movie_paths += finalMovie_path;
                 movie_id += finalid;
-                editor.putString("poster_path", movie_paths + "-");
+                editor.putString("poster_path",  movie_paths+ "-" );
                 ++favorit_movie_number;
                 editor.putInt("favorit_movie_number", favorit_movie_number);
-                editor.putString("movie_id", movie_id + "-");
-               sharedPref.edit().remove("favorit_movie_number").commit();
-               sharedPref.edit().remove("poster_path").commit();
-               sharedPref.edit().remove("movie_id").commit();
-                //editor.commit();
-               // editor.apply();
+                editor.putString("movie_id", movie_id );
+              // sharedPref.edit().remove("favorit_movie_number").commit();
+              // sharedPref.edit().remove("poster_path").commit();
+              // sharedPref.edit().remove("movie_id").commit();
+                editor.commit();
+                editor.apply();
 
             }
 
