@@ -2,6 +2,7 @@ package com.example.yasminabdelhay.movies2;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
-
+//this is Fragment main
 public class
         MovieData extends android.support.v4.app.Fragment {
 
@@ -50,22 +51,19 @@ public class
     String movie_path = null;
     ArrayList<String> poster_pathes1 =new ArrayList<>();
     ArrayList<String> poster_id =new ArrayList<>();
-    ArrayList<String> mposter_pathesList =new ArrayList<>();
-   // NameListnere nameListnere =null;
+    ArrayList<String> poster_name =new ArrayList<>();
+    ArrayList<String> json_string =new ArrayList<>();
+    ArrayList<String> movie_date =new ArrayList<>();
+    ArrayList<String>  movie_overview =new ArrayList<>();
+    ArrayList<String> movie_rate=new ArrayList<>();
     NameListnere nameListneres=null;
     SharedPreferences  SharedPref;
     String sortType ;
 
-
-
     Movie movie=new Movie(MovieJsonStr);
-
-
     public MovieData() {
         setHasOptionsMenu(true);
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -83,30 +81,64 @@ public class
 
         //read favorite poster path from shared prefrence
 
-        String moviePathString;
-        moviePathString=SharedPref.getString("poster_path", "");
+        String sharedPreferencesString;
+        sharedPreferencesString=SharedPref.getString("poster_path", "");
 
         String IDString;
         IDString=SharedPref.getString("movie_id", "");
-         Log.v("bigstring",IDString);
+
+        String jasonString;
+        jasonString=SharedPref.getString("jason_string", "");
+
+        String nameString;
+        nameString=SharedPref.getString("movie_title", "");
+
         int sharedPreferencesStringNumberofFavorit;
         sharedPreferencesStringNumberofFavorit=SharedPref.getInt("favorit_movie_number", 0);
 
-        String[] parts = moviePathString.split("-", sharedPreferencesStringNumberofFavorit);
+        String dateString;
+        dateString=SharedPref.getString("date_string", "");
+
+        String overViwString;
+        overViwString=SharedPref.getString("overViww_string", "");
+
+        String rateString;
+        rateString=SharedPref.getString("rate_string", "");
+
+        String[] parts = sharedPreferencesString.split("-", sharedPreferencesStringNumberofFavorit);
         String[] parts2 = IDString.split(",", sharedPreferencesStringNumberofFavorit);
+        String[] parts3 = nameString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts7 =  dateString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts8 = overViwString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts9 = rateString.split("-", sharedPreferencesStringNumberofFavorit);
+
         Log.v("number", String.valueOf(sharedPreferencesStringNumberofFavorit));
         poster_pathes1.clear();
-      //  Log.v("movie_path", movie_path);
-      for (int i=0;i<sharedPreferencesStringNumberofFavorit;i++){
+        poster_id.clear();
+        poster_name.clear();
+        poster_id.clear();
+        movie_rate.clear();
+        movie_date.clear();
+        movie_overview.clear();
+        json_string.clear();
+
+   for (int i=0;i<sharedPreferencesStringNumberofFavorit;i++){
             poster_pathes1.add(i, parts[i]);
-           poster_id.add(i, parts2[i]);
+            poster_id.add(i, parts2[i]);
+            poster_name.add(i, parts3[i]);
+
+           movie_date.add(i, parts7[i]);
+           movie_overview.add(i, parts8[i]);
+           movie_rate.add(i, parts9[i]);
+
 
         }
-//        Log.v("number id", (poster_id.get(1)));
-
-
-
         Collections.reverse(poster_pathes1);
+        Collections.reverse(poster_id);
+        Collections.reverse(poster_name);
+        Collections.reverse(movie_date);
+        Collections.reverse( movie_overview);
+        Collections.reverse(movie_rate);
 
         if(sortType.equals(getString(R.string.pref_units_popular))){
             new MovieTask().execute("popular");
@@ -127,9 +159,6 @@ public class
             imageAdapter.notifyDataSetChanged();
 
 
-
-
-
         }
 
 
@@ -138,22 +167,14 @@ public class
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
-
-
         rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        //rootView2 = inflater.inflate(R.layout.fragment_detail, container, false);
-
         gridView = (GridView) rootView.findViewById(R.id.gv_posters);
-
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
 
             @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
 
                 if (sortType.equals(getString(R.string.pref_units_most_likely)) || sortType.equals(getString(R.string.pref_units_popular))) {
                     int movie_id = 0;
@@ -179,22 +200,27 @@ public class
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-//                ImageButton imageButton = (ImageButton) rootView.findViewById(R.id.favorite);
+
+                    nameListneres.selsctedName(movie_name, MovieJsonStr, position, movie_path, movie_id,"",0,"");
 
 
-                    nameListneres.selsctedName(movie_name, MovieJsonStr, position, movie_path, 0);
+                }
+                else {
 
-
-
-                } else {
-
-                    String movie_name=null;
                     String movie_id = poster_id.get(position);
+                    String movie_path_favorite = poster_pathes1.get(position);
+                    String movie_name_favorite = poster_name.get(position);
+                    String movie_date_favorite = movie_date.get(position);
+                    String movie_rate_favorite = movie_rate.get(position);
+                    String movie_overview_favorite = movie_overview.get(position);
+                    String[] parts3 = movie_path_favorite.split("-", 2);
+                    String[] parts4 = movie_id.split(",", 2);
+                    String[] parts5 = movie_name_favorite.split("-", 2);
+                    String[] parts8 = movie_date_favorite.split("-", 2);
+                    String[] parts9 = movie_rate_favorite.split("-", 2);
+                    String[] parts10 = movie_overview_favorite.split("-", 2);
+                    nameListneres.selsctedName(parts5[0], MovieJsonStr, position, parts3[0], Integer.parseInt(parts4[0]),parts8[0] , Double.parseDouble(parts9[0]), parts10[0]);
 
-                    Log.v("id movie", movie_id);
-
-
-                    nameListneres.selsctedName(movie_name, MovieJsonStr, position, movie_path, Integer.parseInt(movie_id));
                 }
 
             }
@@ -213,8 +239,6 @@ public class
             }
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-
-
 
 
             try {
@@ -236,20 +260,17 @@ public class
                             .appendQueryParameter(api_key, BuildConfig.OPEN_MOVIE_AAP_API_KEY)
                             .build();
                 }
-//http://api.themoviedb.org/3/movie/popular?api_key=67c3e9a8357661792e5956106c3de3f6
+
                 URL url = new URL(buildUri.toString());
-             //   Log.v(LOG_TAG, "Built URI " + buildUri.toString());
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
-
-
                 urlConnection.connect();
 
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
-                    // Nothing to do.
+
                     return null;
                 }
 
@@ -267,7 +288,6 @@ public class
                 }
 
                 MovieJsonStr = buffer.toString();
-            //    Log.v(LOG_TAG, "MOVIE Json String  " + MovieJsonStr);
 
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Movie Json String Not found", e);
@@ -313,8 +333,14 @@ public void setNameListneres(NameListnere nameListneres){
 
 
 }
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        nameListneres = (NameListnere) activity;
+
+    }
 
 }
+
 
 
 

@@ -40,6 +40,14 @@ public  class DetailFragment extends Fragment {
     int position;
     String movie_path ;
     int movie_id;
+    String part1=null;
+    double movie_vote = 0;
+
+    SharedPreferences  SharedPref;
+    String sortType ;
+    String movie_overview = null;
+    String movie_date = null;
+
     public DetailFragment() {
     }
 
@@ -50,6 +58,12 @@ public  class DetailFragment extends Fragment {
         position = (int) getArguments().get("position");
         movie_path = (String) getArguments().get("movie_path");
        movie_id = (int) getArguments().get("movie_id");
+
+        movie_date = (String) getArguments().get("movie_date");
+        movie_overview = (String) getArguments().get("movie_rate");
+        movie_vote= (double) getArguments().get("movie_overview");
+
+
     }
 
 
@@ -58,20 +72,17 @@ public  class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-       // String MovieJsonStr= null;
-       // int position = 0;
-        //  final int movie_id;
-        //  final String movie_name;
-       // final String movie_path = null;
-        String movie_path2=null ;
 
+        String movie_path2=null ;
+        setRetainInstance(true);
         int id = 0;
         String movie_title = null;
         String poster_pathes = null;
-
-
-
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        SharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        sortType= SharedPref.getString(getString(R.string.pref_units_key), getString(R.string.pref_units_popular));
+        final ImageButton imageButton =(ImageButton) rootView.findViewById(R.id.favorite);
+
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra("str")) {
             MovieJsonStr = intent.getStringExtra("str");
@@ -84,107 +95,172 @@ public  class DetailFragment extends Fragment {
             movie_id = intent.getIntExtra("movie_id", -1);
         }
 
-
+        Log.v("Fragment_id", movie_id + "");
         if (intent != null && intent.hasExtra("movie_path")) {
-            movie_path=intent.getStringExtra("movie_path");
+            movie_path = intent.getStringExtra("movie_path");
         }
 
-        movie_path2=movie_path2+movie_path;
-
-
-        try {
-            new MovieURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (intent != null && intent.hasExtra("movie_name")) {
+            movie_title = intent.getStringExtra("movie_name");
         }
 
-         try {
-            new ReviewsURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (intent != null && intent.hasExtra("movie_date")) {
+            movie_date = intent.getStringExtra("movie_date");
+        }
+
+        if (intent != null && intent.hasExtra("movie_rate")) {
+            movie_vote = intent.getDoubleExtra("movie_rate", 0.0);
+        }
+
+        if (intent != null && intent.hasExtra("movie_overview")) {
+            movie_overview = intent.getStringExtra("movie_overview");
         }
 
 
 
-        try {
-            movie_title = new Movie(MovieJsonStr).getoriginaltitleataFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if(sortType.equals(getString(R.string.pref_units_most_likely)) || sortType.equals(getString(R.string.pref_units_popular))) {
+
+
+
+
+            try {
+                new MovieURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                new ReviewsURL(getContext(), rootView).execute(new Movie(MovieJsonStr).getIDMovieFromJson().get(position));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+
+                movie_title = new Movie(MovieJsonStr).getoriginaltitleataFromJson().get(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ((TextView) rootView.findViewById(R.id.movie_title))
+                    .setText(movie_title);
+
+
+            final ImageView imageView = ((ImageView) rootView.findViewById(R.id.movie_image));
+
+            try {
+                poster_pathes = new Movie(MovieJsonStr).getPosterPathDataFromJson().get(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Picasso.with(getActivity()).load(poster_pathes).into(imageView);
+
+
+
+            //  String date=null;
+            try {
+                movie_date = new Movie(MovieJsonStr).getReleaseDateFromJson().get(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            // date= movie_date.charAt(0)+movie_date.charAt(1)+movie_date.charAt(2)+movie_date.charAt(3)+"";
+
+            String[] parts = movie_date.split("-", 2);
+             part1 = parts[0];
+            String part2 = parts[1];
+
+            ((TextView) rootView.findViewById(R.id.movie_date))
+                    .setText(part1);
+
+
+
+
+            try {
+                movie_vote = new Movie(MovieJsonStr).getVoteAverageFromJson().get(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ((TextView) rootView.findViewById(R.id.movie_vote))
+                    .setText((movie_vote) + "/10");
+
+
+            try {
+                movie_overview = new Movie(MovieJsonStr).getoverviewDataFromJson().get(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            ((TextView) rootView.findViewById(R.id.movie_overview))
+                    .setText(movie_overview);
+            // ImageView imageView1= (ImageView) rootView.findViewById(R.id.w_star_image);
+
+
+
+            try {
+                id = new Movie(MovieJsonStr).getIDMovieFromJson().get(position);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
         }
-        ((TextView) rootView.findViewById(R.id.movie_title))
-                .setText(movie_title);
+        else{
 
 
-        final ImageView imageView = ((ImageView) rootView.findViewById(R.id.movie_image));
+               imageButton.setImageResource(R.drawable.star2);
 
-        try {
-            poster_pathes = new Movie(MovieJsonStr).getPosterPathDataFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
+                new MovieURL(getContext(), rootView).execute(movie_id);
+
+
+                new ReviewsURL(getContext(), rootView).execute(movie_id);
+
+              ((TextView) rootView.findViewById(R.id.movie_title))
+                    .setText(movie_title);
+
+
+            final ImageView imageView = ((ImageView) rootView.findViewById(R.id.movie_image));
+
+            Picasso.with(getActivity()).load(movie_path).into(imageView);
+
+
+            ((TextView) rootView.findViewById(R.id.movie_date))
+                    .setText(movie_date);
+
+            ((TextView) rootView.findViewById(R.id.movie_vote))
+                    .setText((movie_vote) + "/10");
+
+
+            ((TextView) rootView.findViewById(R.id.movie_overview))
+                    .setText(movie_overview);
         }
-        Picasso.with(getActivity()).load(poster_pathes).into(imageView);
-
-
-        String movie_date = null;
-        //  String date=null;
-        try {
-            movie_date = new Movie(MovieJsonStr).getReleaseDateFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        // date= movie_date.charAt(0)+movie_date.charAt(1)+movie_date.charAt(2)+movie_date.charAt(3)+"";
-
-        String[] parts = movie_date.split("-", 2);
-        String part1 = parts[0];
-        String part2 = parts[1];
-
-        ((TextView) rootView.findViewById(R.id.movie_date))
-                .setText(part1);
-
-
-
-        double movie_vote = 0;
-        try {
-            movie_vote = new Movie(MovieJsonStr).getVoteAverageFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ((TextView) rootView.findViewById(R.id.movie_vote))
-                .setText((movie_vote) + "/10");
-
-        String movie_overview = null;
-        try {
-            movie_overview = new Movie(MovieJsonStr).getoverviewDataFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ((TextView) rootView.findViewById(R.id.movie_overview))
-                .setText(movie_overview);
-        // ImageView imageView1= (ImageView) rootView.findViewById(R.id.w_star_image);
-        final ImageButton imageButton =(ImageButton) rootView.findViewById(R.id.favorite);
-
-
-        try {
-            id = new Movie(MovieJsonStr).getIDMovieFromJson().get(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
 
         final String finalMovie_path = movie_path;
         final String finalid = id +",";
-        Log.v("idString",finalid);
+        final String finalMovieTitle=movie_title;
+        final String finalMovieJason=MovieJsonStr;
+        final String finaldate=part1;
+        final String finaloverViewn=movie_overview;
+        final String finalrate=movie_vote+"";
+
+        Log.v("idString", finalid);
+
+
         imageButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
                 imageButton.setImageResource(R.drawable.star2);
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                SharedPreferences
+                        sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 SharedPreferences.Editor editor = sharedPref.edit();
 
                 String movie_paths = sharedPref.getString("poster_path", "");
 
 
+                String jason = sharedPref.getString("jason_string", "");
+                String date = sharedPref.getString("date_string", "");
+                String overView = sharedPref.getString("overViww_string", "");
+                String rate = sharedPref.getString("rate_string", "");
+
+                String movie_title = sharedPref.getString("movie_title", "");
                 String movie_id = sharedPref.getString("movie_id", "");
 
                 int favorit_movie_number;
@@ -192,13 +268,20 @@ public  class DetailFragment extends Fragment {
 
                 movie_paths += finalMovie_path;
                 movie_id += finalid;
-                editor.putString("poster_path",  movie_paths+ "-" );
+                movie_title +=finalMovieTitle;
+                jason +=finalMovieJason;
+                date +=finaldate;
+                overView +=finaloverViewn;
+                rate +=finalrate;
+                editor.putString("poster_path",  movie_paths+ "-");
                 ++favorit_movie_number;
                 editor.putInt("favorit_movie_number", favorit_movie_number);
-                editor.putString("movie_id", movie_id );
-              // sharedPref.edit().remove("favorit_movie_number").commit();
-              // sharedPref.edit().remove("poster_path").commit();
-              // sharedPref.edit().remove("movie_id").commit();
+                editor.putString("movie_id", movie_id);
+                editor.putString("movie_title", movie_title + "-");
+                editor.putString("date_string", date + "-");
+                editor.putString("overViww_string", overView + "-");
+                editor.putString("rate_string", rate + "-");
+                editor.putString("jason_string", jason + "$");
                 editor.commit();
                 editor.apply();
 
@@ -264,8 +347,6 @@ public  class DetailFragment extends Fragment {
 
                 final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
                 final String api_key = "api_key";
-                //    final String QUERY_PARAM = "q";
-
 
                 Uri buildUri;
                 buildUri = Uri.parse(MOVIE_BASE_URL + movie_id[0] + "/videos?").buildUpon()
@@ -335,7 +416,7 @@ public  class DetailFragment extends Fragment {
 
         public ArrayList<String> getTralierDataFromJson()
                 throws JSONException {
-//https://www.youtube.com/watch?v=EIELwayIIT4
+
             final String Movie_result = "results";
             final String key = "key";
             String movie_Tralier_Url;

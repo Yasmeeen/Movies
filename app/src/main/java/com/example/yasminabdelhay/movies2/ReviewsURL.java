@@ -47,8 +47,6 @@ public class ReviewsURL extends AsyncTask<Integer, Void, ArrayList<String>> {
     ArrayList<String> Tralier_url = new ArrayList<>();
     ReviewsURL(Context context, View rootView2){
         this.context=context;
-        //this.inflater=inflater;
-       // this.listView=listView;
         this.rootView2=rootView2;
 
     }
@@ -59,7 +57,6 @@ public class ReviewsURL extends AsyncTask<Integer, Void, ArrayList<String>> {
 
     @Override
     protected ArrayList<String> doInBackground(Integer... movie_id) {
-//http://api.themoviedb.org/3/movie/157336/reviews?api_key=67c3e9a8357661792e5956106c3de3f6
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -67,14 +64,11 @@ public class ReviewsURL extends AsyncTask<Integer, Void, ArrayList<String>> {
 
             final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
             final String api_key = "api_key";
-            //    final String QUERY_PARAM = "q";
-
 
             Uri buildUri;
             buildUri = Uri.parse(MOVIE_BASE_URL + movie_id[0] + "/reviews?").buildUpon()
                     .appendQueryParameter(api_key, BuildConfig.OPEN_MOVIE_AAP_API_KEY)
                     .build();
-
 
             URL url = new URL(buildUri.toString());
             Log.v("y", "Built URI " + buildUri.toString());
@@ -141,7 +135,7 @@ public class ReviewsURL extends AsyncTask<Integer, Void, ArrayList<String>> {
 
     public ArrayList<String> getothernameDataFromJson()
             throws JSONException {
-//https://www.youtube.com/watch?v=EIELwayIIT4
+
         final String Movie_result = "results";
         final String author = "author";
         final String content = "content";

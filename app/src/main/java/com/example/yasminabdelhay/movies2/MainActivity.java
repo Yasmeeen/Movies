@@ -76,27 +76,37 @@ boolean mtwopanel;
     }
 
 
+
     @Override
-    public void selsctedName(String movie_name,String MovieJsonStr,int position,String  movie_path,int movie_id ) {
-            if(mtwopanel){
-                DetailFragment detailFragment=new DetailFragment();
-                Bundle extras =new Bundle();
-                extras.putString("movie_name",movie_name);
-                extras.putString("MovieJsonStr", MovieJsonStr);
-                extras.putInt("position", position);
-                extras.putString("movie_path", movie_path);
-                extras.putInt("movie_id", movie_id);
-                detailFragment.setArguments(extras);
-                getSupportFragmentManager().beginTransaction().replace(R.id.flpanel_two,detailFragment).commit();
+    public void selsctedName(String movie_name, String MovieJsonStr, int position, String movie_path, int movie_id, String movie_date, double movie_rate, String movie_overview) {
+
+        if(mtwopanel){
+            DetailFragment detailFragment=new DetailFragment();
+            Bundle extras =new Bundle();
+            extras.putString("movie_name",movie_name);
+            extras.putString("MovieJsonStr", MovieJsonStr);
+            extras.putInt("position", position);
+            extras.putString("movie_path", movie_path);
+            extras.putInt("movie_id", movie_id);
+
+            extras.putString("movie_date", movie_date);
+            extras.putString("movie_overview", movie_overview);
+
+            extras.putDouble("movie_rate", movie_rate);
+            extras.putInt("movie_id", movie_id);
 
 
-            }
+            detailFragment.setArguments(extras);
+            getSupportFragmentManager().beginTransaction().replace(R.id.flpanel_two,detailFragment).commit();
+
+
+        }
         else {
-                Intent intent = new Intent(this, DetailActivity.class)
-                        .putExtra("pos", position).putExtra("str", MovieJsonStr)
-                        .putExtra("movie_path", movie_path).putExtra("movie_id", movie_id).putExtra("movie_name", movie_name);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra("pos", position).putExtra("str", MovieJsonStr)
+                    .putExtra("movie_path", movie_path).putExtra("movie_id", movie_id).putExtra("movie_name", movie_name)
+                    .putExtra("movie_date", movie_date).putExtra("movie_rate", movie_rate).putExtra("movie_overview", movie_overview);
+            startActivity(intent);
+        }
     }
-
 }
