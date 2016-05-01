@@ -107,9 +107,9 @@ public class
 
         String[] parts = sharedPreferencesString.split("-", sharedPreferencesStringNumberofFavorit);
         String[] parts2 = IDString.split(",", sharedPreferencesStringNumberofFavorit);
-        String[] parts3 = nameString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts3 = nameString.split("&", sharedPreferencesStringNumberofFavorit);
         String[] parts7 =  dateString.split("-", sharedPreferencesStringNumberofFavorit);
-        String[] parts8 = overViwString.split("-", sharedPreferencesStringNumberofFavorit);
+        String[] parts8 = overViwString.split("&", sharedPreferencesStringNumberofFavorit);
         String[] parts9 = rateString.split("-", sharedPreferencesStringNumberofFavorit);
 
         Log.v("number", String.valueOf(sharedPreferencesStringNumberofFavorit));
@@ -152,9 +152,7 @@ public class
         else {
 
 
-            gridView.setAdapter(null);
             imageAdapter = new ImageAdapter(getActivity(), poster_pathes1);
-            gridView.setAdapter(null);
             gridView.setAdapter(imageAdapter);
             imageAdapter.notifyDataSetChanged();
 
@@ -215,10 +213,10 @@ public class
                     String movie_overview_favorite = movie_overview.get(position);
                     String[] parts3 = movie_path_favorite.split("-", 2);
                     String[] parts4 = movie_id.split(",", 2);
-                    String[] parts5 = movie_name_favorite.split("-", 2);
+                    String[] parts5 = movie_name_favorite.split("&", 2);
                     String[] parts8 = movie_date_favorite.split("-", 2);
                     String[] parts9 = movie_rate_favorite.split("-", 2);
-                    String[] parts10 = movie_overview_favorite.split("-", 2);
+                    String[] parts10 = movie_overview_favorite.split("&", 2);
                     nameListneres.selsctedName(parts5[0], MovieJsonStr, position, parts3[0], Integer.parseInt(parts4[0]),parts8[0] , Double.parseDouble(parts9[0]), parts10[0]);
 
                 }

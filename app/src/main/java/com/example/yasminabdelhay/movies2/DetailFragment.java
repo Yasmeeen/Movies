@@ -38,7 +38,7 @@ import java.util.ArrayList;
 public  class DetailFragment extends Fragment {
     String MovieJsonStr;
     int position;
-    String movie_path ;
+    String movie_path=null ;
     int movie_id;
     String part1=null;
     double movie_vote = 0;
@@ -47,6 +47,7 @@ public  class DetailFragment extends Fragment {
     String sortType ;
     String movie_overview = null;
     String movie_date = null;
+    String movie_title = null;
 
     public DetailFragment() {
     }
@@ -57,11 +58,12 @@ public  class DetailFragment extends Fragment {
         MovieJsonStr =getArguments().getString("MovieJsonStr");
         position = (int) getArguments().get("position");
         movie_path = (String) getArguments().get("movie_path");
-       movie_id = (int) getArguments().get("movie_id");
-
+        movie_id = (int) getArguments().get("movie_id");
+        movie_title= (String) getArguments().get("movie_name");
         movie_date = (String) getArguments().get("movie_date");
-        movie_overview = (String) getArguments().get("movie_rate");
-        movie_vote= (double) getArguments().get("movie_overview");
+        movie_overview = (String) getArguments().get("movie_overview");
+        movie_vote= (double) getArguments().get("movie_rate");
+
 
 
     }
@@ -72,11 +74,9 @@ public  class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        String movie_path2=null ;
         setRetainInstance(true);
         int id = 0;
-        String movie_title = null;
+
         String poster_pathes = null;
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
         SharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -277,11 +277,14 @@ public  class DetailFragment extends Fragment {
                 ++favorit_movie_number;
                 editor.putInt("favorit_movie_number", favorit_movie_number);
                 editor.putString("movie_id", movie_id);
-                editor.putString("movie_title", movie_title + "-");
+                editor.putString("movie_title", movie_title + "&");
                 editor.putString("date_string", date + "-");
-                editor.putString("overViww_string", overView + "-");
+                editor.putString("overViww_string", overView + "&");
                 editor.putString("rate_string", rate + "-");
                 editor.putString("jason_string", jason + "$");
+
+
+
                 editor.commit();
                 editor.apply();
 
