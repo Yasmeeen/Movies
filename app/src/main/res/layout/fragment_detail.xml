@@ -27,7 +27,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/movie_image"
-                android:layout_gravity="left"
                 android:scaleType="fitStart"
                 android:padding="10dp"
                 android:layout_alignParentLeft="true"
